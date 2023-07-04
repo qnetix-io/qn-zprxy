@@ -38,35 +38,11 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-if [ -f /var/lib/qnetix/vars/ZPINSTALLED ]
-then
-    echo "======================================================================"
-    echo "| Zabbix Proxy is already installed, would you like to reinstall it? |"
-    echo "|   PLEASE NOTE THAT THIS WILL DESTROY ANY CURRENT CUSTOM CONFIGS    |"
-    echo "|                 AND ALL DOCKER CONTAINERS / VOLUMES                |"
-    echo "|               PLEASE MAKE A BACKUP BEFORE CONTINUING.              |"
-    echo "======================================================================"
-    if [ "${confirm}" != "Y" ] && [ "${confirm}" != "y" ]
-    then
-        echo "Script canceled. Exiting..."
-        exit 0
-    fi
-    docker rm $(docker ps -aq) 2> /dev/null
-    docker rmi $(docker images -q) 2> /dev/null
-    docker volume rm $(docker volume ls -q) 2> /dev/null
-    random_dir=$(mktemp -d /tmp/XXXXXXXX)
-    git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
-    cp -r "$random_dir"/* /var/lib/qnetix
-    chmod +x /var/lib/qnetix/*.sh
-    chmod 700 -R /var/lib/qnetix/
-else
-    mkdir -p /var/lib/qnetix/
-    random_dir=$(mktemp -d /tmp/XXXXXXXX)
-    git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
-    cp -r "$random_dir"/* /var/lib/qnetix
-    chmod +x /var/lib/qnetix/*.sh
-    chmod 700 -R /var/lib/qnetix/
-fi
+random_dir=$(mktemp -d /tmp/XXXXXXXX)
+git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
+cp -r "$random_dir"/* /var/lib/qnetix
+chmod +x /var/lib/qnetix/*.sh
+chmod 700 -R /var/lib/qnetix/
 
 # Detect the shell being used
 current_shell=$(basename "$SHELL")
