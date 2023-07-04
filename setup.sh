@@ -72,25 +72,25 @@ fi
 current_shell=$(basename "$SHELL")
 
 # Set the source files and target directory based on the shell type
-source_dir="/var/lib/qnetix/"
+source_dir="/var/lib/test/"
 target_dir="$HOME"
+menu_file=""  # Declare a variable to hold the menu file name
 
 if [ "$current_shell" = "bash" ]; then
     files="bash-menu bash-menu-estate"
+    menu_file="bash-menu"
 else 
     files="sh-menu"
+    menu_file="sh-menu"
 fi
 
-# Create symbolic links for each source file in the target directory
-for file in "${files[@]}"; do
+# Split the files string into a list and loop over it
+for file in $files; do
     # Check if the file exists before creating a symbolic link
     if [ -f "$source_dir$file" ]; then
         ln -s "$source_dir$file" "$target_dir/$file"
     fi
 done
 
-# Create the alias command as a separate variable
-alias_command=$(readlink -f "$target_dir/menu")
-
-# Echo the alias command into the .profile file
-echo "alias zproxy='$alias_command'" >> "$HOME/.profile"
+# Create an alias to run the correct "menu" file as "zproxy menu"
+echo "alias zproxy='$(readlink -f "$target_dir/$menu_file")'" >> "$HOME/.profile"
