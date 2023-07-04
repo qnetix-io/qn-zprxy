@@ -68,14 +68,25 @@ else
     chmod 700 -R /var/lib/qnetix/
 fi
 
-# Set the source files and target directory
+# Detect the shell being used
+current_shell=$(basename "$SHELL")
+
+# Set the source files and target directory based on the shell type
 source_dir="/var/lib/qnetix/"
 target_dir="$HOME"
 
+if [ "$current_shell" = "bash" ]; then
+    files=("bash-menu" "bash-menu-estate")
+else 
+    files=("sh-menu")
+fi
+
 # Create symbolic links for each source file in the target directory
-for file in "$source_dir"/menu "$source_dir"/menu-estate; do
-  filename=$(basename "$file")
-  ln -s "$file" "$target_dir/$filename"
+for file in "${files[@]}"; do
+    # Check if the file exists before creating a symbolic link
+    if [ -f "$source_dir$file" ]; then
+        ln -s "$source_dir$file" "$target_dir/$file"
+    fi
 done
 
 # Create an alias to run the "menu" file as "zproxy menu"
