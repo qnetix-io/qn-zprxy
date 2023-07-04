@@ -89,5 +89,8 @@ for file in "${files[@]}"; do
     fi
 done
 
-# Create an alias to run the "menu" file as "zproxy menu"
-echo "alias zproxy='$(readlink -f "$target_dir/menu")'" >> "$HOME/.profile"
+# Create the alias command as a separate variable
+alias_command=$(readlink -f "$target_dir/menu")
+
+# Echo the alias command into the .profile file
+echo "alias zproxy='$alias_command'" >> "$HOME/.profile"
