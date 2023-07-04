@@ -56,14 +56,14 @@ then
     docker volume rm $(docker volume ls -q) 2> /dev/null
     random_dir=$(mktemp -d /tmp/XXXXXXXX)
     git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
-    cp -r "$random_dir" /var/lib/qnetix
+    cp -r "$random_dir"/* /var/lib/qnetix
     chmod +x /var/lib/qnetix/*.sh
     chmod 700 -R /var/lib/qnetix/
 else
     mkdir -p /var/lib/qnetix/
     random_dir=$(mktemp -d /tmp/XXXXXXXX)
     git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
-    cp -r "$random_dir" /var/lib/qnetix
+    cp -r "$random_dir"/* /var/lib/qnetix
     chmod +x /var/lib/qnetix/*.sh
     chmod 700 -R /var/lib/qnetix/
 fi
