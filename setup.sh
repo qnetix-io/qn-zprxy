@@ -76,9 +76,9 @@ source_dir="/var/lib/qnetix/"
 target_dir="$HOME"
 
 if [ "$current_shell" = "bash" ]; then
-    files=("bash-menu" "bash-menu-estate")
+    files="bash-menu bash-menu-estate"
 else 
-    files=("sh-menu")
+    files="sh-menu"
 fi
 
 # Create symbolic links for each source file in the target directory
