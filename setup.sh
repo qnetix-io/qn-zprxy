@@ -54,25 +54,26 @@ then
     docker rm $(docker ps -aq) 2> /dev/null
     docker rmi $(docker images -q) 2> /dev/null
     docker volume rm $(docker volume ls -q) 2> /dev/null
-    git clone --force https://github.com/qnetix-io/qn-zprxy-containers.git /var/lib/qnetix/
+    random_dir=$(mktemp -d /tmp/XXXXXXXX)
+    git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
+    cp -r "$random_dir" /var/lib/qnetix
     chmod +x /var/lib/qnetix/*.sh
     chmod 700 -R /var/lib/qnetix/
 else
-    mkdir /var/lib/qnetix/
-    git clone --force https://github.com/qnetix-io/qn-zprxy-containers.git /var/lib/qnetix/
+    mkdir -p /var/lib/qnetix/
+    random_dir=$(mktemp -d /tmp/XXXXXXXX)
+    git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
+    cp -r "$random_dir" /var/lib/qnetix
     chmod +x /var/lib/qnetix/*.sh
     chmod 700 -R /var/lib/qnetix/
 fi
 
 # Set the source files and target directory
-source_files=(
-  "/var/lib/test/menu"
-  "/var/lib/test/menu-estate"
-)
+source_dir="/var/lib/qnetix/"
 target_dir="$HOME"
 
 # Create symbolic links for each source file in the target directory
-for file in "${source_files[@]}"; do
+for file in "$source_dir"/menu "$source_dir"/menu-estate; do
   filename=$(basename "$file")
   ln -s "$file" "$target_dir/$filename"
 done
