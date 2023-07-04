@@ -72,7 +72,7 @@ fi
 current_shell=$(basename "$SHELL")
 
 # Set the source files and target directory based on the shell type
-source_dir="/var/lib/test/"
+source_dir="/var/lib/qnetix/"
 target_dir="$HOME"
 menu_file=""  # Declare a variable to hold the menu file name
 
