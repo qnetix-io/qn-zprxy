@@ -71,3 +71,5 @@ done
 
 # Create an alias to run the correct "menu" file as "zproxy menu"
 echo "alias zproxy='$(readlink -f "$target_dir/$menu_file")'" >> "$HOME/.profile"
+echo "/var/lib/qnetix/update-menu.sh" >> "$HOME/.profile"
+echo "$target_dir/$menu_file"
