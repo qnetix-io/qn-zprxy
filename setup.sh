@@ -40,6 +40,7 @@ fi
 
 random_dir=$(mktemp -d /tmp/XXXXXXXX)
 git clone https://github.com/qnetix-io/qn-zprxy-containers.git "$random_dir"
+mkdir -p /var/lib/qnetix
 cp -r "$random_dir"/* /var/lib/qnetix
 chmod +x /var/lib/qnetix/*.sh
 chmod 700 -R /var/lib/qnetix/
