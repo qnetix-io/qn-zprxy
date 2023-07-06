@@ -17,7 +17,6 @@ wget -O /root/update/vars/size-large https://raw.githubusercontent.com/qnetix-io
 wget -O /root/update/vars/size-med https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-med
 wget -O /root/update/vars/size-small https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-small
 wget -O /root/update/vars/size-xl https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-xl
-wget -O /root/update/vars/varglobal https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/varglobal
 wget -O /root/update/vars/zabbix_agentd.general.conf https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/zabbix_agentd.general.conf
 
 cp /root/update/init.sh /var/lib/qnetix/init.sh

@@ -39,12 +39,14 @@ sleep 10
 #
 
 # Remove installed docker containers and point status files
-# Zabbix-SQL Lite
-docker kill zproxy-lite 2> /dev/null
-docker rm --force zproxy-lite 2> /dev/null
-docker rmi --force zabbix-proxy-sqlite3:alpine-6.0-latest 2> /dev/null
-docker volume rm --force zproxy-lite 2> /dev/null
+docker kill $(docker ps -aq) 2> /dev/null
+docker rm --force $(docker ps -aq) 2> /dev/null
+docker rmi --force $(docker images -q) 2> /dev/null
+docker volume rm --force $(docker volume ls -q) 2> /dev/null
+
+# Remove localised config files
 rm -f /var/lib/qnetix/vars/ZPINSTALLED > /dev/null
+rm /etc/zabbix/zabbix_agentd.general.conf
 
 #
 # New install
@@ -83,7 +85,7 @@ fi
 ## SET VARIABLES ##
 # Set variables for docker run command
 # <set "proxy size" prior to init, else default used
-. /var/lib/qnetix/vars/varlocal
+#. /var/lib/qnetix/vars/varlocal
 . /var/lib/qnetix/vars/size-default
 
 # removing varglobal that contains server names in prep for new server name
@@ -197,7 +199,6 @@ if test -f "/etc/zabbix/agentd.psk"; then
         TLSKEY=$(openssl rand -hex 32)
         echo ${TLSKEY} >> /etc/zabbix/agentd.psk
 fi
-
 
 # Update file
 # Used for internal testing
