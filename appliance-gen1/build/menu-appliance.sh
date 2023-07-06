@@ -32,6 +32,7 @@ echo "
      8.  Show Agent PSK Key
 
      TROUBLESHOOTING
+     
      9.  Show Network Traffic
      10. Restart Appliance Agent
      11. Edit Appliance Hosts File
