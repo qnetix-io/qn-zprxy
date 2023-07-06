@@ -1,3 +1,0 @@
-init.sh
-menu-appliance.sh
-menu-size.sh
