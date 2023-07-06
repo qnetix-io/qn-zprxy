@@ -44,8 +44,7 @@ docker kill zproxy-lite 2> /dev/null
 docker rm --force zproxy-lite 2> /dev/null
 docker rmi --force zabbix-proxy-sqlite3:alpine-6.0-latest 2> /dev/null
 docker volume rm --force zproxy-lite 2> /dev/null
-rm -f /var/lib/qnetix/vars/ZPINSTALLED >/dev/null
-
+rm -f /var/lib/qnetix/vars/ZPINSTALLED > /dev/null
 
 #
 # New install
@@ -182,16 +181,41 @@ else
     echo -e "${COL}All containers are running correctly without errors or warnings.${NCOL}"
 fi
 
-
 ## LOCAL ZABBIX AGENT ##
 # Configure zabbix agent
+# Remove existing config
+rc-service zabbix-agentd stop
+rm /etc/zabbix/zabbix_agentd.general.conf
+cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
+
+# Generate TLS Key
+if test -f "/etc/zabbix/agentd.psk"; then
+        echo "PSK key exists - skipping"
+    else
+        echo "Creating PSK Key"
+        rm -f /etc/zabbix/agentd.psk > /dev/null
+        TLSKEY=$(openssl rand -hex 32)
+        echo ${TLSKEY} >> /etc/zabbix/agentd.psk
+fi
+
+
+# Update file
+# Used for internal testing
+#server_id=4001
+#proxy_number=01
+#echo ${server_id}
+#echo ${proxy_number}
+
 sed -i "s/Hostname=<hostname>/Hostname=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
+sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
+
+# Start service
 rc-service zabbix-agentd restart
 rc-update add zabbix-agentd boot
-
 
 ## CLOSE ##
 echo "${COL}All complete.${NCOL}"
 sleep 10
 
-/var/lib/qnetix/menu-appliance.sh
+echo "Type 'menu' to return to menu"
+# /var/lib/qnetix/menu-appliance.sh

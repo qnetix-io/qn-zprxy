@@ -29,6 +29,7 @@ echo "
      5. Configure Proxy (Initialise)
      6. Configure Proxy (Settings)
      7. Configure Agent
+     8. Show Agent PSK Key
 
      u. Update Build Files
      x. Exit Menu
@@ -72,6 +73,9 @@ case $choice in
       menu;;
 
   7)  nano /etc/zabbix/zabbix_agentd.general.conf
+      menu;;
+
+  8)  nano /etc/zabbix/agentd.psk
       menu;;
 
   u)  clear

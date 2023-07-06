@@ -11,6 +11,7 @@ mkdir /var/lib/qnetix/vars
 wget -O /root/update/init.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/init.sh
 wget -O /root/update/menu-appliance.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/menu-appliance.sh
 wget -O /root/update/menu-size.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/menu-size.sh
+
 wget -O /root/update/vars/size-default https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-default
 wget -O /root/update/vars/size-large https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-large
 wget -O /root/update/vars/size-med https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-med
