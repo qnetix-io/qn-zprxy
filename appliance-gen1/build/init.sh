@@ -170,24 +170,22 @@ for container in $containers; do
         echo "Container '${container}' is not running."
         errors_or_warnings=1
     fi
-
-    echo # Add an empty line for better readability
 done
 
 # Echo the result based on the flag
 if [ ${errors_or_warnings} -eq 1 ]; then
     #echo "One or more containers have errors or warnings."
-    echo -e "${COL}One or more containers have errors or warnings.${NCOL}"
+    echo -e "One or more containers have errors or warnings."
 else
     #echo "All containers are running correctly without errors or warnings."
-    echo -e "${COL}All containers are running correctly without errors or warnings.${NCOL}"
+    echo -e "All containers are running correctly without errors or warnings."
 fi
 
 ## LOCAL ZABBIX AGENT ##
 # Configure zabbix agent
 # Remove existing config
 rc-service zabbix-agentd stop
-rm /etc/zabbix/zabbix_agentd.general.conf
+# rm /etc/zabbix/zabbix_agentd.general.conf # removed as part of inital teardown
 cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
 
 # Generate TLS Key
@@ -215,8 +213,9 @@ rc-service zabbix-agentd restart
 rc-update add zabbix-agentd boot
 
 ## CLOSE ##
-echo "${COL}All complete.${NCOL}"
+echo "All complete."
 sleep 10
 
+echo "  "
 echo "Type 'menu' to return to menu"
 # /var/lib/qnetix/menu-appliance.sh
