@@ -19,18 +19,22 @@ echo -e " ${COL}
 echo "
      APPLIANCE SETTINGS
 
-     1. Configure Appliance
-     2. Update Appliance
-     3. Reboot Appliance
+     1.  Configure Appliance
+     2.  Update Appliance
+     3.  Reboot Appliance
     
      ZABBIX PROXY SETTINGS
 
-     4. Configure Proxy (Size)
-     5. Configure Proxy (Initialise)
-     6. Configure Proxy (Settings)
-     7. Configure Agent
-     8. Show Agent PSK Key
-     9. Show Network Traffic
+     4.  Configure Proxy (Size)
+     5.  Configure Proxy (Initialise)
+     6.  Configure Proxy (Settings)
+     7.  Configure Agent
+     8.  Show Agent PSK Key
+
+    TROUBLESHOOTING
+     9.  Show Network Traffic
+     10. Restart Appliance Agent
+     11. Edit Appliance Hosts File
 
      u. Update Build Files
      x. Exit Menu
@@ -81,6 +85,13 @@ case $choice in
 
   9)  tcpdump 'port 10051'
       menu;;
+
+  10) rc-service zabbix-agentd restart
+      menu;;
+
+  11) nano /etc/hosts
+      menu;;
+
 
   u)  clear
       echo " "
