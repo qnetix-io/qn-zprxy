@@ -46,7 +46,9 @@ docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
 # Remove localised config files
 rm -f /var/lib/qnetix/vars/ZPINSTALLED > /dev/null
+rc-service zabbix-agentd stop
 rm /etc/zabbix/zabbix_agentd.general.conf
+# rm /etc/zabbix/agentd.psk # used for clean builds
 
 #
 # New install

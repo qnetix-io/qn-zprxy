@@ -30,6 +30,7 @@ echo "
      6. Configure Proxy (Settings)
      7. Configure Agent
      8. Show Agent PSK Key
+     9. Show Network Traffic
 
      u. Update Build Files
      x. Exit Menu
@@ -76,6 +77,9 @@ case $choice in
       menu;;
 
   8)  nano /etc/zabbix/agentd.psk
+      menu;;
+
+  9)  tcpdump 'port 10051'
       menu;;
 
   u)  clear
