@@ -22,8 +22,7 @@ echo "
      1. Configure Appliance
      2. Update Appliance
      3. Reboot Appliance
-
-
+    
      ZABBIX PROXY SETTINGS
 
      4. Configure Proxy (Size)
@@ -31,6 +30,7 @@ echo "
      6. Configure Proxy (Settings)
      7. Configure Agent
 
+     u. Update Build Files
      x. Exit Menu
 "
 
@@ -72,6 +72,14 @@ case $choice in
       menu;;
 
   7)  nano /etc/zabbix/zabbix_agentd.general.conf
+      menu;;
+
+  u)  clear
+      echo " "
+      rm /root/getupdates.sh
+      wget -O /root/getupdates.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/getupdates.sh
+      chmod +x /root/getupdates.sh
+      /root/getupdates.sh
       menu;;
 
   x)  clear
