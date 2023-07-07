@@ -45,10 +45,13 @@ docker rmi --force $(docker images -q) 2> /dev/null
 docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
 # Remove localised config files
-rm -f /var/lib/qnetix/vars/ZPINSTALLED > /dev/null
 rc-service zabbix-agentd stop
 rm /etc/zabbix/zabbix_agentd.general.conf
 # rm /etc/zabbix/agentd.psk # used for clean builds
+rm /etc/zabbix/agentname.conf
+
+# Clean logs
+rm -r /var/log/*
 
 #
 # New install
@@ -202,13 +205,16 @@ fi
 
 # Update file
 # Used for internal testing
-#server_id=4001
-#proxy_number=01
+server_id=4001
+proxy_number=01
 #echo ${server_id}
 #echo ${proxy_number}
 
 sed -i "s/Hostname=<hostname>/Hostname=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
 sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
+
+# Write agent name to file
+echo -e "proxy-${server_id}-${proxy_number}" >> /etc/zabbix/agentname.conf
 
 # Start service
 rc-service zabbix-agentd restart

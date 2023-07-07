@@ -4,9 +4,7 @@ NCOL='\033[0m'
 
 menu() {
 clear
-echo "  "
 echo -e " ${COL}
-
         ____                 __   _
        / __ \  ____   ___   / /_ (_)_  __
       / / / / / __ \ / _ \ / __// /| |/_/
@@ -33,7 +31,7 @@ echo "
 
      TROUBLESHOOTING
      
-     9.  Show Network Traffic
+     9.  Show Zabbix Network Traffic
      10. Restart Appliance Agent
      11. Edit Appliance Hosts File
 
@@ -81,8 +79,7 @@ case $choice in
   7)  nano /etc/zabbix/zabbix_agentd.general.conf
       menu;;
 
-  8)  nano /etc/zabbix/agentd.psk
-      menu;;
+  8)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
 
   9)  tcpdump 'port 10051'
       menu;;
