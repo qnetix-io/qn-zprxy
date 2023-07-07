@@ -1,9 +1,7 @@
 #!/bin/sh
 # (c) Qnetix Ltd 2023
 
-read -r line < /etc/zabbix/agentname.conf
-echo "PSK Identity : $line"
-
+cat /etc/zabbix/agentname.conf
 read -r line < /etc/zabbix/agentd.psk
 echo "PSK KEY: $line"
 
