@@ -107,7 +107,7 @@ echo -e "\nPROXY_ADDRESS=proxy-${server_id}-${proxy_number}" >> /var/lib/qnetix/
 # Download the Zabbix-proxy-sqlite3 container
 echo "  "
 echo "Downloading Zabbix Proxy container."
-docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.0-latest
+docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
 # Docker - Zabbix-proxy-sqlite3 
 echo "Starting Zabbix Proxy container."
@@ -138,7 +138,7 @@ docker run -d --name zproxylite \
   -e ZBX_VMWARETIMEOUT="${ZBXVMWARETIMEOUT}" \
   -e ZBX_LOGSLOWQUERIES="${ZBXLOGSLOWQUERIES}" \
   --restart always \
-  zabbix/zabbix-proxy-sqlite3:alpine-6.0-latest
+  zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
 echo "Checking for errors"
 
