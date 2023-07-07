@@ -26,14 +26,14 @@ echo "
      4.  Configure Proxy (Size)
      5.  Configure Proxy (Initialise)
      6.  Configure Proxy (Settings)
-     7.  Configure Agent
+     7.  Configure Host Agent
      8.  Show Key Information
 
-     TROUBLESHOOTING
-     
+     TROUBLESHOOTING    
      9.  Show Zabbix Network Traffic
-     10. Restart Appliance Agent
-     11. Edit Appliance Hosts File
+     10. Show Zabbix Local Agent Log
+     11. Restart Appliance Agent
+     12. Edit Appliance Hosts File
 
      u. Update Build Files
      x. Exit Menu
@@ -81,14 +81,10 @@ case $choice in
 
   8)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
 
-  9)  tcpdump 'port 10051'
-      menu;;
-
-  10) rc-service zabbix-agentd restart
-      menu;;
-
-  11) nano /etc/hosts
-      menu;;
+  9)  tcpdump 'port 10051';;
+  10) tail -50 /var/log/zabbix/zabbix_agentd.log;;
+  11) rc-service zabbix-agentd restart && menu;;
+  12) nano /etc/hosts && menu;;
 
   u)  clear
       echo " "

@@ -6,3 +6,5 @@ read -r line < /etc/zabbix/agentd.psk
 echo "PSK KEY: $line"
 
 read -p "Press any key to continue"
+
+/var/lib/qnetix/menu-appliance.sh

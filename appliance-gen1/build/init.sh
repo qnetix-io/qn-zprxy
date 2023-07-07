@@ -46,7 +46,8 @@ docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
 
 # Clean logs
-rm -r /var/log/*
+rm -r /var/log/zabbix/*
+rm -r /var/log/*.*
 
 #
 # New install
