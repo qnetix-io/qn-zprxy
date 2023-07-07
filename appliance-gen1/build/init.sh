@@ -1,5 +1,5 @@
 #!/bin/sh
-# (c) Qnetix Ltd 2023
+# (c) Qnetix Ltd 2023 v1.2
 
 COL='\033[0;31m'
 NCOL='\033[0m'
@@ -44,11 +44,6 @@ docker rm --force $(docker ps -aq) 2> /dev/null
 docker rmi --force $(docker images -q) 2> /dev/null
 docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
-# Remove localised config files
-rc-service zabbix-agentd stop
-rm /etc/zabbix/zabbix_agentd.general.conf
-# rm /etc/zabbix/agentd.psk # used for clean builds
-rm /etc/zabbix/agentname.conf
 
 # Clean logs
 rm -r /var/log/*
@@ -117,13 +112,12 @@ docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.0-latest
 echo "Starting Zabbix Proxy container."
 
 docker run -d --name zproxylite \
-  -e ZBX_SERVER_HOST="monitor-${server_id}.qnetix.cloud" \
-  -e ZBX_SERVER_PORT="10050" \
+  -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${server_id}" \
   -e ZBX_PROXYMODE="0" \
   -e ZBX_HOSTNAME="proxy-${server_id}-${proxy_number}" \
   -e ZBX_ENABLEREMOTECOMMANDS="1" \
   -e ZBX_LOGREMOTECOMMANDS="1" \
-  -e ZBX_STATSALLOWEDIP="monitor-${server_id}.qnetix.cloud" \
+  -e ZBX_STATSALLOWEDIP="monitor.qnetix.cloud" \
   -e ZBX_PINGERS="${ZBXPINGERS}" \
   -e ZBX_CACHESIZE="${ZBXCACHESIZE}" \
   -e ZBX_PROXYOFFLINEBUFFER="${ZBXPROXYOFFLINEBUFFER}" \
@@ -205,22 +199,25 @@ fi
 
 # Update file
 # Used for internal testing
-server_id=4001
-proxy_number=01
+#server_id=4001
+#proxy_number=01
 #echo ${server_id}
 #echo ${proxy_number}
 
 sed -i "s/Hostname=<hostname>/Hostname=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
 sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
 
-# Write agent name to file
-echo -e "proxy-${server_id}-${proxy_number}" >> /etc/zabbix/agentname.conf
+# Write agent name to file (delete if file exists)
+rm /etc/zabbix/agentname.conf
+echo -e "Customer ID : ${server_id}" >> /etc/zabbix/agentname.conf
+echo -e "Proxy ID : ${proxy_number}" >> /etc/zabbix/agentname.conf
+echo -e "Proxy : proxy-${server_id}-${proxy_number}" >> /etc/zabbix/agentname.conf
 
 # Start service
 rc-service zabbix-agentd restart
-rc-update add zabbix-agentd boot
+#rc-update add zabbix-agentd boot
 
-## CLOSE ##
+## CLOSE ##cat 
 echo "All complete."
 sleep 10
 

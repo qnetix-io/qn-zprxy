@@ -7,9 +7,9 @@ clear
 echo -e " ${COL}
         ____                 __   _
        / __ \  ____   ___   / /_ (_)_  __
-      / / / / / __ \ / _ \ / __// /| |/_/
-     / /_/ / / / / //  __// /_ / /_>  <
-     \___\_\/_/ /_/ \___/ \__//_//_/|_|
+      / / / / / __ \ / _ \ / __// /| |/ /
+     / /_/ / / / / //  __// /_ / / >  <
+     \___\_\/_/ /_/ \___/ \__//_/ /_/|_|
 
      ZABBIX PROXY APPLIANCE
      (c) Qnetix Ltd, 2023${NCOL}"
@@ -27,7 +27,7 @@ echo "
      5.  Configure Proxy (Initialise)
      6.  Configure Proxy (Settings)
      7.  Configure Agent
-     8.  Show Agent PSK Key
+     8.  Show Key Information
 
      TROUBLESHOOTING
      
@@ -89,7 +89,6 @@ case $choice in
 
   11) nano /etc/hosts
       menu;;
-
 
   u)  clear
       echo " "
