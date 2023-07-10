@@ -6,7 +6,7 @@
 COL='\033[0;31m'
 NCOL='\033[0m'
 
-echo "  "
+echo "  ";
 echo -e " ${COL}
 
         ____                 __   _
@@ -33,8 +33,9 @@ echo -e " ${COL}
      =========================================================${NCOL}"
 
 echo "   "
-echo " type ctrl+c to abort script"
-sleep 10
+echo " Names must be set before running init"
+echo " Type ctrl+c to abort script"
+sleep 5
 
 #
 # Remove existing install
@@ -58,10 +59,6 @@ rm -r /var/log/*.*
 # <add qnetix to path>
 export PATH=':/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-# Set $USER variable as root
-if [ -z "${USER}" ]; then
-    USER="$(id -un)"
-fi
 
 
 ## DEPENDANCIES ##
@@ -79,40 +76,9 @@ else
 fi
 
 
-## DOWNLOAD CODE ##
-# < placeholder to download build files from github,  v1 assuems files are already present >
-
-
-## SET LOCAL INFORMATION ##
-echo 'Use existing key/name information (y/n)? ' && read answer
-
-if [ "$answer" != "${answer#[Yy]}" ] ;then 
-    echo "Using existing name and key information"
-else
-    # Set TLS Key
-    rm -f /etc/zabbix/tlskey > /dev/null
-    echo "Creating New Key"
-    TLSKEY=$(openssl rand -hex 32)
-    echo ${TLSKEY} >> /etc/zabbix/tlskey
-
-    # Set Names
-    rm -f /etc/zabbix/applianceconf
-    echo "Please enter the appliance details (do not add any FQDN elements)"
-
-    read -p "Customer ID - example: '4001' :" server_id
-    read -p "Local Proxy Appliance Number - example: '01' :" proxy_number
-
-    echo -e "CUSTOMERID=\"${server_id}\"" >> /etc/zabbix/applianceconf
-    echo -e "PROXYID=\"${proxy_number}\"" >> /etc/zabbix/applianceconf
-    echo -e "TLSID=\"proxy-${server_id}-${proxy_number}\"" >> /etc/zabbix/applianceconf
-    echo -e "TLSFILE=\"/etc/zabbix/tlskey\"" >> /etc/zabbix/applianceconf
-    echo -e "PROXYNAME=\"proxy-${server_id}-${proxy_number}\"" >> /etc/zabbix/applianceconf
-fi
-
-
 ## DOCKER ##
 # Download the Zabbix-proxy-sqlite3 container
-echo "  "
+echo "  ";
 echo "Downloading Zabbix Proxy container."
 docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
@@ -121,7 +87,7 @@ docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 . /etc/zabbix/applianceconf
 
 # Docker - Zabbix-proxy-sqlite3 
-echo "Starting Zabbix Proxy container."
+echo "Starting Zabbix Proxy container"
 
 docker run -d --name zproxylite \
   -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${CUSTOMERID}" \
@@ -170,7 +136,7 @@ errors_or_warnings=0
 for container in $containers; do
     # Check if the container is running
     if docker ps --filter "name=${container}" --format '{{.Names}}' | grep -q -w "${container}"; then
-        echo "Container '${container}' is running."
+        echo "Container '${container}' is running"
 
         # Check the container logs for errors or warnings
         log_output=$(docker logs "${container}" 2>&1)
@@ -180,52 +146,43 @@ for container in $containers; do
             echo "${log_output}" | grep -Ei --color=always "error|warning"
             errors_or_warnings=1
         else
-            echo "No errors or warnings found in '${container}' logs."
+            echo "No errors or warnings found in '${container}' logs"
         fi
     else
-        echo "Container '${container}' is not running."
+        echo "Container '${container}' is not running"
         errors_or_warnings=1
     fi
 done
 
 # Echo the result based on the flag
 if [ ${errors_or_warnings} -eq 1 ]; then
-    #echo "One or more containers have errors or warnings."
-    echo -e "One or more containers have errors or warnings."
+    #echo "One or more containers have errors or warnings"
+    echo -e "One or more containers have errors or warnings"
 else
     #echo "All containers are running correctly without errors or warnings."
-    echo -e "All containers are running correctly without errors or warnings."
+    echo -e "All containers are running correctly without errors or warnings"
 fi
 
 
 ## LOCAL ZABBIX AGENT ##
-echo 'Configure local zabbix agent (y/n)? ' && read agentanswer
+echo "Reconfigure local agent"
+rc-service zabbix-agentd stop
+rm -r /var/log/zabbix/*
+cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
 
-if [ "$agentanswer" != "${agetnanswer#[Yy]}" ] ;then 
-    echo "Not reconfiguring local agent"
-else
-    echo "Reconfigure local agent"
-    rc-service zabbix-agentd stop
-    rm -r /var/log/zabbix/*
-    cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
+# Load Variables
+. /etc/zabbix/applianceconf
 
-    # Load Variables
-    . /etc/zabbix/applianceconf
+# Set Config
+sed -i "s/Hostname=<hostname>/Hostname=${PROXYNAME}/g" /etc/zabbix/zabbix_agentd.general.conf
+sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=${TLSID}/g" /etc/zabbix/zabbix_agentd.general.conf
 
-    # Set Config
-    sed -i "s/Hostname=<hostname>/Hostname=${PROXYNAME}/g" /etc/zabbix/zabbix_agentd.general.conf
-    sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=${TLSID}/g" /etc/zabbix/zabbix_agentd.general.conf
-
-    # Start service
-    rc-service zabbix-agentd restart
-    rc-update add zabbix-agentd boot
-fi
+# Start service
+rc-service zabbix-agentd restart
+rc-update add zabbix-agentd boot
 
 
 ## CLOSE ##
-echo "All complete."
-sleep 10
-
-echo "  "
+echo "All complete"
 echo "Type 'menu' to return to menu"
-# /var/lib/qnetix/menu-appliance.sh
+

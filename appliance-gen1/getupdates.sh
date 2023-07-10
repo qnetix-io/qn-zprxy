@@ -10,7 +10,7 @@ mkdir /root/update/vars
 
 
 ## EXEC ##
-execfiles="init.sh menu-appliance.sh menu-size.sh getkey.sh"
+execfiles="init.sh init-names.sh menu-appliance.sh menu-size.sh getkey.sh"
 for execfile in $execfiles; do
 
     echo "File Update: '${execfile}'"
