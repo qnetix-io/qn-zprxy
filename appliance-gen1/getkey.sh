@@ -1,9 +1,10 @@
 #!/bin/sh
 # (c) Qnetix Ltd 2023
 
-cat /etc/zabbix/agentname.conf
-read -r line < /etc/zabbix/agentd.psk
-echo "PSK KEY: $line"
+cat /etc/zabbix/applianceconf
+
+read -r line < /etc/zabbix/tlskey
+echo "TLSKEY=$line"
 
 read -p "Press any key to continue"
 

@@ -23,7 +23,7 @@ done
 
 
 ## VAR ##
-varfiles="size-default size-large size-med size-small size-xl zabbix_agentd.general.conf"
+varfiles="size-large size-med size-small size-xl zabbix_agentd.general.conf"
 for varfile in $varfiles; do
 
     echo "Var Update: '${varfile}'"
@@ -37,4 +37,3 @@ done
 ## ALIAS ##
 wget -O /etc/profile.d/90qnetix.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/90qnetix.sh
 chmod +x /etc/profile.d/90qnetix.sh
-./etc/profile.d/90qnetix.sh

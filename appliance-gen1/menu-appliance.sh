@@ -15,25 +15,26 @@ echo -e " ${COL}
      (c) Qnetix Ltd, 2023${NCOL}"
 
 echo "
-     APPLIANCE SETTINGS
-
+     APPLIANCE
      1.  Configure Appliance
      2.  Update Appliance
      3.  Reboot Appliance
-    
-     ZABBIX PROXY SETTINGS
 
+     ZABBIX PROXY
      4.  Configure Proxy (Size)
      5.  Configure Proxy (Initialise)
-     6.  Configure Proxy (Settings)
-     7.  Configure Host Agent
-     8.  Show Key Information
+     6.  Show Zabbix Proxy Log
+     7.  Restart Zabbix Proxy
 
-     TROUBLESHOOTING    
-     9.  Show Zabbix Network Traffic
-     10. Show Zabbix Local Agent Log
-     11. Restart Appliance Agent
-     12. Edit Appliance Hosts File
+     ZABBIX AGENT
+     8.  Configure Host Agent
+     9.  Show Zabbix Agent Log
+     10. Restart Zabbix Agent
+
+     OTHER
+     11. Show Key Information
+     12. Network Monitor
+     13. Edit Appliance Hosts File
 
      u. Update Build Files
      x. Exit Menu
@@ -50,54 +51,36 @@ read choice
 
 case $choice in
 
-  1)  clear
-      echo "Type 'menu' to return to main menu"
-      /sbin/setup-dns && /sbin/setup-hostname && /sbin/setup-interfaces
-      echo "   "
-      read -p "Press any key to continue"
-      menu;;
+  1)  clear && echo "Type 'menu' to return to main menu" && /sbin/setup-dns && /sbin/setup-hostname && /sbin/setup-interfaces &&  echo " " && read -p "Press any key to continue" && menu;;
+  2)  clear && apk update && apk upgrade && read -p "Press any key to continue" && menu;;
+  3)  reboot;;
 
-  2)  clear
-      apk update && apk upgrade
-      read -p "Press any key to continue"
-      menu;;
+  4)  /var/lib/qnetix/menu-size.sh && menu;;
+  5)  clear && exec /var/lib/qnetix/init.sh & menu;;
+  6)  docker logs zproxylite && read -p "Press any key to continue" && menu;;
+  7)  docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
 
-  3)  reboot
-      read -p "Press any key to continue"
-      menu;;
+  8)  nano /etc/zabbix/zabbix_agentd.general.conf && menu;;
+  9) tail -200 /var/log/zabbix/zabbix_agentd.log && read -p "Press any key to continue" && menu;;
+  10) rc-service zabbix-agentd restart && read -p "Press any key to continue" && menu;;
 
-  4)  /var/lib/qnetix/menu-size.sh
-      menu;;
+  11)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
+  12)  iptraf-ng && menu;;
+  13) nano /etc/hosts && menu;;
 
-  5)  clear
-      exec /var/lib/qnetix/init.sh
-      menu;;
-
-  6)  nano /var/lib/qnetix/vars/varglobal
-      menu;;
-
-  7)  nano /etc/zabbix/zabbix_agentd.general.conf
-      menu;;
-
-  8)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
-
-  9)  tcpdump 'port 10051';;
-  10) tail -50 /var/log/zabbix/zabbix_agentd.log;;
-  11) rc-service zabbix-agentd restart && menu;;
-  12) nano /etc/hosts && menu;;
-
-  u)  clear
+  u)  clear 
       echo " "
       rm /root/getupdates.sh
-      wget -O /root/getupdates.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/getupdates.sh
+      wget -O /root/getupdates.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/getupdates.sh
       chmod +x /root/getupdates.sh
       /root/getupdates.sh
+      read -p "Press any key to continue"
       menu;;
 
   x)  clear
       exit;;
 
-  *) echo "invalid option";;
+  *) echo "invalid option, Please try again";;
 
 esac
 

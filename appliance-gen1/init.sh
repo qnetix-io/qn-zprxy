@@ -1,5 +1,7 @@
 #!/bin/sh
 # (c) Qnetix Ltd 2023 v1.2
+# https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/init.sh
+
 
 COL='\033[0;31m'
 NCOL='\033[0m'
@@ -44,9 +46,7 @@ docker rm --force $(docker ps -aq) 2> /dev/null
 docker rmi --force $(docker images -q) 2> /dev/null
 docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
-
 # Clean logs
-rm -r /var/log/zabbix/*
 rm -r /var/log/*.*
 
 #
@@ -79,28 +79,35 @@ else
 fi
 
 
-## DOWNLOAD CODE##
+## DOWNLOAD CODE ##
 # < placeholder to download build files from github,  v1 assuems files are already present >
 
 
-## SET VARIABLES ##
-# Set variables for docker run command
-# <set "proxy size" prior to init, else default used
-#. /var/lib/qnetix/vars/varlocal
-. /var/lib/qnetix/vars/size-default
+## SET LOCAL INFORMATION ##
+echo 'Use existing key/name information (y/n)? ' && read answer
 
-# removing varglobal that contains server names in prep for new server name
-rm /var/lib/qnetix/vars/varglobal
+if [ "$answer" != "${answer#[Yy]}" ] ;then 
+    echo "Using existing name and key information"
+else
+    # Set TLS Key
+    rm -f /etc/zabbix/tlskey > /dev/null
+    echo "Creating New Key"
+    TLSKEY=$(openssl rand -hex 32)
+    echo ${TLSKEY} >> /etc/zabbix/tlskey
 
-# Set varglobal - master server name
-echo "   "
-echo "Please enter the appliance details (do not add any FQDN elements)"
+    # Set Names
+    rm -f /etc/zabbix/applianceconf
+    echo "Please enter the appliance details (do not add any FQDN elements)"
 
-read -p "Customer ID - example: '4001' :" server_id
-echo -e "\nSERVER_ADDRESS=monitor-${server_id}" >> /var/lib/qnetix/vars/varglobal
+    read -p "Customer ID - example: '4001' :" server_id
+    read -p "Local Proxy Appliance Number - example: '01' :" proxy_number
 
-read -p "Local Proxy Appliance Number - example: '01' :" proxy_number
-echo -e "\nPROXY_ADDRESS=proxy-${server_id}-${proxy_number}" >> /var/lib/qnetix/vars/varglobal
+    echo -e "CUSTOMERID=\"${server_id}\"" >> /etc/zabbix/applianceconf
+    echo -e "PROXYID=\"${proxy_number}\"" >> /etc/zabbix/applianceconf
+    echo -e "TLSID=\"proxy-${server_id}-${proxy_number}\"" >> /etc/zabbix/applianceconf
+    echo -e "TLSFILE=\"/etc/zabbix/tlskey\"" >> /etc/zabbix/applianceconf
+    echo -e "PROXYNAME=\"proxy-${server_id}-${proxy_number}\"" >> /etc/zabbix/applianceconf
+fi
 
 
 ## DOCKER ##
@@ -109,16 +116,24 @@ echo "  "
 echo "Downloading Zabbix Proxy container."
 docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
+# Load Variables
+. /etc/zabbix/appliancesize
+. /etc/zabbix/applianceconf
+
 # Docker - Zabbix-proxy-sqlite3 
 echo "Starting Zabbix Proxy container."
 
 docker run -d --name zproxylite \
-  -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${server_id}" \
+  -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${CUSTOMERID}" \
+  -e ZBX_HOSTNAME="${PROXYNAME}" \
+  -e ZBX_TLSPSKIDENTITY="${TLSID}" \
+  -e ZBX_TLSPSKFILE="/etc/zabbix/tlskey" \
+  -e ZBX_TLSCONNECT="psk" \
+  -e ZBA_TLSACCEPT="psk" \
+  -e ZBX_STATSALLOWEDIP="monitor.qnetix.cloud" \
   -e ZBX_PROXYMODE="0" \
-  -e ZBX_HOSTNAME="proxy-${server_id}-${proxy_number}" \
   -e ZBX_ENABLEREMOTECOMMANDS="1" \
   -e ZBX_LOGREMOTECOMMANDS="1" \
-  -e ZBX_STATSALLOWEDIP="monitor.qnetix.cloud" \
   -e ZBX_PINGERS="${ZBXPINGERS}" \
   -e ZBX_CACHESIZE="${ZBXCACHESIZE}" \
   -e ZBX_PROXYOFFLINEBUFFER="${ZBXPROXYOFFLINEBUFFER}" \
@@ -137,13 +152,14 @@ docker run -d --name zproxylite \
   -e ZBX_VMWARECACHESIZE="${ZBXVMWARECACHESIZE}" \
   -e ZBX_VMWARETIMEOUT="${ZBXVMWARETIMEOUT}" \
   -e ZBX_LOGSLOWQUERIES="${ZBXLOGSLOWQUERIES}" \
+  -v /var/lib/qnetix/tlskey.conf:/var/lib/qnetix/tlskey.conf \
   --restart always \
   zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
-echo "Checking for errors"
-
 
 ## DOCKER CHECKS ##
+echo "Checking for errors"
+
 # Define the container names
 containers="zproxylite"
 
@@ -181,44 +197,32 @@ else
     echo -e "All containers are running correctly without errors or warnings."
 fi
 
-## LOCAL ZABBIX AGENT ##
-# Configure zabbix agent
-# Remove existing config
-rc-service zabbix-agentd stop
-# rm /etc/zabbix/zabbix_agentd.general.conf # removed as part of inital teardown
-cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
 
-# Generate TLS Key
-if test -f "/etc/zabbix/agentd.psk"; then
-        echo "PSK key exists - skipping"
-    else
-        echo "Creating PSK Key"
-        rm -f /etc/zabbix/agentd.psk > /dev/null
-        TLSKEY=$(openssl rand -hex 32)
-        echo ${TLSKEY} >> /etc/zabbix/agentd.psk
+## LOCAL ZABBIX AGENT ##
+echo 'Configure local zabbix agent (y/n)? ' && read agentanswer
+
+if [ "$agentanswer" != "${agetnanswer#[Yy]}" ] ;then 
+    echo "Not reconfiguring local agent"
+else
+    echo "Reconfigure local agent"
+    rc-service zabbix-agentd stop
+    rm -r /var/log/zabbix/*
+    cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
+
+    # Load Variables
+    . /etc/zabbix/applianceconf
+
+    # Set Config
+    sed -i "s/Hostname=<hostname>/Hostname=${PROXYNAME}/g" /etc/zabbix/zabbix_agentd.general.conf
+    sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=${TLSID}/g" /etc/zabbix/zabbix_agentd.general.conf
+
+    # Start service
+    rc-service zabbix-agentd restart
+    #rc-update add zabbix-agentd boot
 fi
 
-# Update file
-# Used for internal testing
-#server_id=4001
-#proxy_number=01
-#echo ${server_id}
-#echo ${proxy_number}
 
-sed -i "s/Hostname=<hostname>/Hostname=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
-sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=proxy-${server_id}-${proxy_number}/g" /etc/zabbix/zabbix_agentd.general.conf
-
-# Write agent name to file (delete if file exists)
-rm /etc/zabbix/agentname.conf
-echo -e "Customer ID : ${server_id}" >> /etc/zabbix/agentname.conf
-echo -e "Proxy ID : ${proxy_number}" >> /etc/zabbix/agentname.conf
-echo -e "Proxy : proxy-${server_id}-${proxy_number}" >> /etc/zabbix/agentname.conf
-
-# Start service
-rc-service zabbix-agentd restart
-#rc-update add zabbix-agentd boot
-
-## CLOSE ##cat 
+## CLOSE ##
 echo "All complete."
 sleep 10
 
