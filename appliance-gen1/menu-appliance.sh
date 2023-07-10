@@ -59,7 +59,7 @@ case $choice in
 
   4)  /var/lib/qnetix/menu-size.sh && menu;;
   5)  /var/lib/qnetix/init-names.sh && menu;;
-  6)  clear && exec /var/lib/qnetix/init.sh & menu;;
+  6)  clear && /var/lib/qnetix/init.sh && exit;;
   7)  docker logs zproxylite && read -p "Press any key to continue" && menu;;
   8)  clear && docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
 
