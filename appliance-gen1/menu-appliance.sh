@@ -1,4 +1,5 @@
-# (c) Qnetix Ltd 2023
+#!/bin/sh
+# (c) Qnetix Ltd 2023 v1.2
 COL='\033[0;36m'
 NCOL='\033[0m'
 
@@ -22,19 +23,20 @@ echo "
 
      ZABBIX PROXY
      4.  Configure Proxy (Size)
-     5.  Configure Proxy (Initialise)
-     6.  Show Zabbix Proxy Log
-     7.  Restart Zabbix Proxy
+     5.  Configure Proxy (Names)
+     6.  Configure Proxy (Initialise)
+     7.  Show Zabbix Proxy Log
+     8.  Restart Zabbix Proxy
 
      ZABBIX AGENT
-     8.  Configure Host Agent
-     9.  Show Zabbix Agent Log
-     10. Restart Zabbix Agent
+     9.  Configure Host Agent
+     10.  Show Zabbix Agent Log
+     11. Restart Zabbix Agent
 
      OTHER
-     11. Show Key Information
-     12. Network Monitor
-     13. Edit Appliance Hosts File
+     12. Show Key Information
+     13. Network Monitor
+     14. Edit Appliance Hosts File
 
      u. Update Build Files
      x. Exit Menu
@@ -56,17 +58,18 @@ case $choice in
   3)  reboot;;
 
   4)  /var/lib/qnetix/menu-size.sh && menu;;
-  5)  clear && exec /var/lib/qnetix/init.sh & menu;;
-  6)  docker logs zproxylite && read -p "Press any key to continue" && menu;;
-  7)  docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
+  5)  /var/lib/qnetix/init-names.sh && menu;;
+  6)  clear && exec /var/lib/qnetix/init.sh & menu;;
+  7)  docker logs zproxylite && read -p "Press any key to continue" && menu;;
+  8)  docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
 
-  8)  nano /etc/zabbix/zabbix_agentd.general.conf && menu;;
-  9) tail -200 /var/log/zabbix/zabbix_agentd.log && read -p "Press any key to continue" && menu;;
-  10) rc-service zabbix-agentd restart && read -p "Press any key to continue" && menu;;
+  9)  nano /etc/zabbix/zabbix_agentd.general.conf && menu;;
+  10) tail -200 /var/log/zabbix/zabbix_agentd.log && read -p "Press any key to continue" && menu;;
+  11) rc-service zabbix-agentd restart && read -p "Press any key to continue" && menu;;
 
-  11)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
-  12)  iptraf-ng && menu;;
-  13) nano /etc/hosts && menu;;
+  12)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
+  13)  iptraf-ng && menu;;
+  14) nano /etc/hosts && menu;;
 
   u)  clear 
       echo " "
