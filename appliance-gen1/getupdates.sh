@@ -1,36 +1,40 @@
 #!/bin/sh
 # (c) Qnetix Ltd 2023
+#https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/init.sh
 
-# Directories
+
+## DIRECTORIES ##
 rm -f -r /root/update
 mkdir /root/update
 mkdir /root/update/vars
-#mkdir /var/lib/qnetix
-#mkdir /var/lib/qnetix/vars
 
-# Scripts
-wget -O /root/update/init.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/init.sh
-cp /root/update/init.sh /var/lib/qnetix/init.sh
-chmod +x /var/lib/qnetix/init.sh
 
-wget -O /root/update/menu-appliance.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/menu-appliance.sh
-cp /root/update/menu-appliance.sh /var/lib/qnetix/menu-appliance.sh
-chmod +x /var/lib/qnetix/menu-appliance.sh
+## EXEC ##
+execfiles="init.sh menu-appliance.sh menu-size.sh getkey.sh"
+for execfile in $execfiles; do
 
-wget -O /root/update/menu-size.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/menu-size.sh
-cp /root/update/menu-size.sh /var/lib/qnetix/menu-size.sh
-chmod +x /var/lib/qnetix/menu-size.sh
+    echo "File Update: '${execfile}'"
 
-wget -O /root/update/getkey.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/getkey.sh
-cp /root/update/getkey.sh /var/lib/qnetix/getkey.sh
-chmod +x /var/lib/qnetix/getkey.sh
+    wget -O /root/update/${execfile} https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/${execfile}
+    cp /root/update/${execfile} /var/lib/qnetix/${execfile}
+    chmod +x /var/lib/qnetix/${execfile}
 
-# Variables
-wget -O /root/update/vars/size-default https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-default
-wget -O /root/update/vars/size-large https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-large
-wget -O /root/update/vars/size-med https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-med
-wget -O /root/update/vars/size-small https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-small
-wget -O /root/update/vars/size-xl https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/size-xl
-wget -O /root/update/vars/zabbix_agentd.general.conf https://raw.githubusercontent.com/qnetix-io/qn-zprxy-base/main/appliance-gen1/build/vars/zabbix_agentd.general.conf
+done
 
-cp -r /root/update/vars /var/lib/qnetix
+
+## VAR ##
+varfiles="size-default size-large size-med size-small size-xl zabbix_agentd.general.conf"
+for varfile in $varfiles; do
+
+    echo "Var Update: '${varfile}'"
+
+    wget -O /root/update/vars/${varfile} https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/vars/${varfile}
+    cp /root/update/vars/${varfile} /var/lib/qnetix/vars/${varfile}
+
+done
+
+
+## ALIAS ##
+wget -O /etc/profile.d/90qnetix.sh https://raw.githubusercontent.com/qnetix-io/qn-zprxy/main/appliance-gen1/90qnetix.sh
+chmod +x /etc/profile.d/90qnetix.sh
+./etc/profile.d/90qnetix.sh
