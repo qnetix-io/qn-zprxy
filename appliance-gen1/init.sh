@@ -152,7 +152,7 @@ docker run -d --name zproxylite \
   -e ZBX_VMWARECACHESIZE="${ZBXVMWARECACHESIZE}" \
   -e ZBX_VMWARETIMEOUT="${ZBXVMWARETIMEOUT}" \
   -e ZBX_LOGSLOWQUERIES="${ZBXLOGSLOWQUERIES}" \
-  -v /var/lib/qnetix/tlskey.conf:/var/lib/qnetix/tlskey.conf \
+  -v ${TLSKEYFILE}:/etc/zabbix/tlskey \
   --restart always \
   zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
@@ -218,7 +218,7 @@ else
 
     # Start service
     rc-service zabbix-agentd restart
-    #rc-update add zabbix-agentd boot
+    rc-update add zabbix-agentd boot
 fi
 
 
