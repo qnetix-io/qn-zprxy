@@ -93,7 +93,7 @@ docker run -d --name zproxylite \
   -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${CUSTOMERID}" \
   -e ZBX_HOSTNAME="${PROXYNAME}" \
   -e ZBX_TLSPSKIDENTITY="${TLSID}" \
-  -e ZBX_TLSPSKFILE="/etc/zabbix/tlskey" \
+  -e ZBX_TLSPSKFILE=/etc/zabbix/tlskey \
   -e ZBX_TLSCONNECT="psk" \
   -e ZBA_TLSACCEPT="psk" \
   -e ZBX_STATSALLOWEDIP="monitor.qnetix.cloud" \
