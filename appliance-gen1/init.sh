@@ -94,7 +94,7 @@ docker run -d --name zproxylite \
   -e ZBX_SERVER_HOST="monitor.qnetix.cloud:${CUSTOMERID}" \
   -e ZBX_HOSTNAME="${PROXYNAME}" \
   -e ZBX_TLSPSKIDENTITY="${TLSID}" \
-  -e ZBX_TLSPSKFILE=/etc/zabbix/tlskey \
+  -e ZBX_TLSPSKFILE="/etc/zabbix/tlskey" \
   -e ZBX_TLSCONNECT="psk" \
   -e ZBA_TLSACCEPT="psk" \
   -e ZBX_STATSALLOWEDIP="monitor.qnetix.cloud" \
@@ -119,7 +119,7 @@ docker run -d --name zproxylite \
   -e ZBX_VMWARECACHESIZE="${ZBXVMWARECACHESIZE}" \
   -e ZBX_VMWARETIMEOUT="${ZBXVMWARETIMEOUT}" \
   -e ZBX_LOGSLOWQUERIES="${ZBXLOGSLOWQUERIES}" \
-  -v ${TLSKEYFILE}:/etc/zabbix/tlskey \
+  -v ${TLSFILE}:/etc/zabbix/tlskey \
   --restart always \
   zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
@@ -190,6 +190,6 @@ rc-service zabbix-agentd restart
 echo " "
 echo " "
 echo "All complete"
+
 echo "Type 'menu' to return to menu"
-exit 0
 
