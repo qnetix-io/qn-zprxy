@@ -30,7 +30,7 @@ echo "
 
      ZABBIX AGENT
      9.  Configure Host Agent
-     10.  Show Zabbix Agent Log
+     10. Show Zabbix Agent Log
      11. Restart Zabbix Agent
 
      OTHER
@@ -61,15 +61,15 @@ case $choice in
   5)  /var/lib/qnetix/init-names.sh && menu;;
   6)  clear && exec /var/lib/qnetix/init.sh & menu;;
   7)  docker logs zproxylite && read -p "Press any key to continue" && menu;;
-  8)  docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
+  8)  clear && docker restart zproxylite && docker container list && read -p "Press any key to continue" && menu;;
 
   9)  nano /etc/zabbix/zabbix_agentd.general.conf && menu;;
-  10) tail -200 /var/log/zabbix/zabbix_agentd.log && read -p "Press any key to continue" && menu;;
-  11) rc-service zabbix-agentd restart && read -p "Press any key to continue" && menu;;
+  10) clear && tail -200 /var/log/zabbix/zabbix_agentd.log && read -p "Press any key to continue" && menu;;
+  11) rm /var/log/zabbix/zabbix_agentd.log && rc-service zabbix-agentd restart && read -p "Press any key to continue" && menu;;
 
-  12)  clear && exec /var/lib/qnetix/getkey.sh && menu;;
-  13)  iptraf-ng && menu;;
-  14) nano /etc/hosts && menu;;
+  12) clear && exec /var/lib/qnetix/getkey.sh && menu;;
+  13) iptraf-ng && menu;;
+  14) clear && nano /etc/hosts && menu;;
 
   u)  clear 
       echo " "

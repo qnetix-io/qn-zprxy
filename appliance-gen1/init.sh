@@ -47,8 +47,6 @@ docker rm --force $(docker ps -aq) 2> /dev/null
 docker rmi --force $(docker images -q) 2> /dev/null
 docker volume rm --force $(docker volume ls -q) 2> /dev/null
 
-# Clean logs
-rm -r /var/log/*.*
 
 #
 # New install
@@ -60,25 +58,27 @@ rm -r /var/log/*.*
 export PATH=':/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 
-
 ## DEPENDANCIES ##
 # Check if dependancies are installed
 if ! command -v git &> /dev/null
 then
-    echo "Git is not installed. Please install Git before running this script."
+    echo "Git is not installed. Please install Git before running this script"
     exit 1
 elif ! command -v docker &> /dev/null
 then
-    echo "Docker is not installed. Please install Docker before running this script."
+    echo "Docker is not installed. Please install Docker before running this script"
     exit 1
 else
-    echo -e "${COL}All required dependencies are installed.${NCOL}"
+    echo -e "All required dependencies are installed"
 fi
 
 
 ## DOCKER ##
 # Download the Zabbix-proxy-sqlite3 container
-echo "  ";
+echo " "
+echo " "
+echo "Reconfiguring Proxy container"
+
 echo "Downloading Zabbix Proxy container."
 docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
@@ -87,6 +87,7 @@ docker pull zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 . /etc/zabbix/applianceconf
 
 # Docker - Zabbix-proxy-sqlite3 
+
 echo "Starting Zabbix Proxy container"
 
 docker run -d --name zproxylite \
@@ -122,8 +123,9 @@ docker run -d --name zproxylite \
   --restart always \
   zabbix/zabbix-proxy-sqlite3:alpine-6.4-latest
 
-
 ## DOCKER CHECKS ##
+echo " "
+echo " "
 echo "Checking for errors"
 
 # Define the container names
@@ -165,7 +167,9 @@ fi
 
 
 ## LOCAL ZABBIX AGENT ##
-echo "Reconfigure local agent"
+echo " "
+echo " "
+echo "Reconfiguring local agent"
 rc-service zabbix-agentd stop
 rm -r /var/log/zabbix/*
 cp /var/lib/qnetix/vars/zabbix_agentd.general.conf /etc/zabbix/zabbix_agentd.general.conf
@@ -179,10 +183,13 @@ sed -i "s/TLSPSKIdentity=<hostname>/TLSPSKIdentity=${TLSID}/g" /etc/zabbix/zabbi
 
 # Start service
 rc-service zabbix-agentd restart
-rc-update add zabbix-agentd boot
+#rc-update add zabbix-agentd boot
 
 
 ## CLOSE ##
+echo " "
+echo " "
 echo "All complete"
 echo "Type 'menu' to return to menu"
+exit 0
 
